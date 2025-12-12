@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useProgress } from '@/hooks/useProgress'
+import { useNotifications } from '@/hooks/useNotifications'
 import { Dashboard } from '@/components/Dashboard'
 import { Session } from '@/components/Session'
 import { Settings } from '@/components/Settings'
@@ -8,6 +9,18 @@ function App() {
   const progress = useProgress()
   const [view, setView] = useState('dashboard')
   const [activeSession, setActiveSession] = useState(null)
+
+  useNotifications({
+    enabled: progress.settings.reminderEnabled,
+    interval: progress.settings.microbreakInterval,
+    browserEnabled: progress.settings.notifications.browser,
+    tabIndicatorEnabled: progress.settings.notifications.tabIndicator,
+    soundEnabled: progress.settings.notifications.sound,
+    onReminder: () => {
+      // Could show a toast or highlight the microbreak button
+      console.log('Reminder triggered!')
+    }
+  })
 
   const handleStartSession = (sessionType) => {
     setActiveSession(sessionType)
