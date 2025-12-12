@@ -1,34 +1,45 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useProgress } from '@/hooks/useProgress'
+import { Dashboard } from '@/components/Dashboard'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const progress = useProgress()
+  const [view, setView] = useState('dashboard')
+  const [activeSession, setActiveSession] = useState(null)
 
+  const handleStartSession = (sessionType) => {
+    setActiveSession(sessionType)
+    setView('session')
+  }
+
+  const handleOpenSettings = () => {
+    setView('settings')
+  }
+
+  const handleBack = () => {
+    setView('dashboard')
+    setActiveSession(null)
+  }
+
+  if (view === 'dashboard') {
+    return (
+      <Dashboard
+        currentDay={progress.currentDay}
+        currentPhase={progress.currentPhase}
+        todaySession={progress.todaySession}
+        onStartSession={handleStartSession}
+        onOpenSettings={handleOpenSettings}
+      />
+    )
+  }
+
+  // Placeholder for other views
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen bg-background p-4 max-w-md mx-auto">
+      <button onClick={handleBack}>← Back</button>
+      <p>View: {view}</p>
+      <p>Session: {activeSession}</p>
+    </div>
   )
 }
 
