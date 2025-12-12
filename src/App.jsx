@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useProgress } from '@/hooks/useProgress'
 import { Dashboard } from '@/components/Dashboard'
+import { Session } from '@/components/Session'
 
 function App() {
   const progress = useProgress()
@@ -21,6 +22,32 @@ function App() {
     setActiveSession(null)
   }
 
+  const handleSessionComplete = () => {
+    if (activeSession === 'morning') {
+      progress.completeMorning()
+    } else if (activeSession === 'microbreak') {
+      progress.completeMicrobreak()
+    } else if (activeSession === 'evening') {
+      progress.completeEvening()
+      // Check if day is complete and advance
+      if (progress.isDayComplete()) {
+        progress.advanceDay()
+      }
+    }
+    handleBack()
+  }
+
+  if (view === 'session' && activeSession) {
+    return (
+      <Session
+        sessionType={activeSession}
+        currentPhase={progress.currentPhase}
+        onComplete={handleSessionComplete}
+        onBack={handleBack}
+      />
+    )
+  }
+
   if (view === 'dashboard') {
     return (
       <Dashboard
@@ -33,12 +60,11 @@ function App() {
     )
   }
 
-  // Placeholder for other views
+  // Settings placeholder
   return (
     <div className="min-h-screen bg-background p-4 max-w-md mx-auto">
       <button onClick={handleBack}>← Back</button>
-      <p>View: {view}</p>
-      <p>Session: {activeSession}</p>
+      <p>Settings coming next...</p>
     </div>
   )
 }
