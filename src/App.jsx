@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProgress } from '@/hooks/useProgress'
 import { Dashboard } from '@/components/Dashboard'
 import { Session } from '@/components/Session'
+import { Settings } from '@/components/Settings'
 
 function App() {
   const progress = useProgress()
@@ -29,13 +30,16 @@ function App() {
       progress.completeMicrobreak()
     } else if (activeSession === 'evening') {
       progress.completeEvening()
-      // Check if day is complete and advance
-      if (progress.isDayComplete()) {
-        progress.advanceDay()
-      }
     }
     handleBack()
   }
+
+  // Check for day advancement after evening completion
+  useEffect(() => {
+    if (progress.isDayComplete()) {
+      progress.advanceDay()
+    }
+  }, [progress.todaySession])
 
   if (view === 'session' && activeSession) {
     return (
@@ -48,24 +52,28 @@ function App() {
     )
   }
 
-  if (view === 'dashboard') {
+  if (view === 'settings') {
     return (
-      <Dashboard
+      <Settings
         currentDay={progress.currentDay}
         currentPhase={progress.currentPhase}
-        todaySession={progress.todaySession}
-        onStartSession={handleStartSession}
-        onOpenSettings={handleOpenSettings}
+        settings={progress.settings}
+        onUpdateSettings={progress.updateSettings}
+        onSetDay={progress.setDay}
+        onReset={progress.resetProgress}
+        onBack={handleBack}
       />
     )
   }
 
-  // Settings placeholder
   return (
-    <div className="min-h-screen bg-background p-4 max-w-md mx-auto">
-      <button onClick={handleBack}>← Back</button>
-      <p>Settings coming next...</p>
-    </div>
+    <Dashboard
+      currentDay={progress.currentDay}
+      currentPhase={progress.currentPhase}
+      todaySession={progress.todaySession}
+      onStartSession={handleStartSession}
+      onOpenSettings={handleOpenSettings}
+    />
   )
 }
 
